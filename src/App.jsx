@@ -1,15 +1,15 @@
+import {videos} from "./api/data.js";
 import {useEffect, useRef, useState} from 'react'
-import './App.css'
 import VideoList from "./components/VideoList.jsx";
 import OptionsEditor from "./components/OptionsEditor.jsx";
-import {videos} from "./api/data.js";
+import VideoPlayer from "./components/VideoPlayer.jsx";
 
 function App() {
-    const [videoOptions, setVideoOptions] = useState({autoplay: false, loop: false, controls: true});
-
     const videoRef = useRef(null);
-    const [selectedVideoName, setSelectedVideoName] = useState(Object.keys(videos)[0]);
     const [currentSrc, setCurrentSrc] = useState("")
+
+    const [videoOptions, setVideoOptions] = useState({autoplay: true, loop: false, controls: true});
+    const [selectedVideoName, setSelectedVideoName] = useState(Object.keys(videos)[0]);
 
     useEffect(() => {
         setCurrentSrc(videos[selectedVideoName])
@@ -29,16 +29,21 @@ function App() {
 
     return (
         <>
-            <h1 className="text-3xl mb-[6vh]">Videoplayer</h1>
-            
-            <div className="grid grid-cols-2 gap-3">
-                
+            <div className="mb-[4vh]">
+                <h1 className="text-3xl mb-10">Videoplayer + custom controls</h1>
+                <p><b>Features</b>:</p>
+                <ul className="list-inside list-disc">
+                    <li>custom progress bar</li>
+                </ul>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 max-w-[900px]">
                 <div>
                     <h4 className="text-2xl mb-5">Choose video:</h4>
-                    <VideoList 
-                        videos={videos} 
+                    <VideoList
+                        videos={videos}
                         selectedVideoName={selectedVideoName}
-                        selectedVideoHandler={selectedVideoHandler} />
+                        selectedVideoHandler={selectedVideoHandler}/>
                 </div>
 
                 <div>
@@ -47,14 +52,12 @@ function App() {
                 </div>
 
             </div>
-
-            <video className={"block aspect-[600/338] w-full max-w-[600px] mt-[10vh] bg-black/60]"}
-                   ref={videoRef}
-                   autoPlay={videoOptions.autoplay}
-                   controls={videoOptions.controls}
-                   loop={videoOptions.loop} playsInline>
-                <source src={currentSrc} type={"video/mp4"}/>
-            </video>
+            
+            <VideoPlayer
+                currentSrc={currentSrc}
+                ref={videoRef}
+                videoOptions={videoOptions}
+            />
         </>
     )
 }
