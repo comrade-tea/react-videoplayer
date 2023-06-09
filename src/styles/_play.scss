@@ -1,5 +1,5 @@
 .play {
-  $size: 20px;
+  $size: 22px;
 
   width: $size;
   height: $size;
@@ -13,7 +13,7 @@
     border-style: solid;
     border-color: transparent;
     border-left-color: #000;
-    transition: .1s;
+    //transition: .1s linear;
   }
 
   &:before {

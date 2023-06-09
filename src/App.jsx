@@ -8,12 +8,12 @@ function App() {
     const videoRef = useRef(null);
     const [currentSrc, setCurrentSrc] = useState("")
 
-    const [videoOptions, setVideoOptions] = useState({autoplay: true, loop: false, controls: true});
+    const [videoOptions, setVideoOptions] = useState({autoplay: false, loop: false, controls: true});
     const [selectedVideoName, setSelectedVideoName] = useState(Object.keys(videos)[0]);
 
     useEffect(() => {
         setCurrentSrc(videos[selectedVideoName])
-        videoRef.current.load();
+        videoRef?.current?.load();
     }, [selectedVideoName]);
 
     const selectedVideoHandler = (name) => {
@@ -55,8 +55,8 @@ function App() {
             
             <VideoPlayer
                 currentSrc={currentSrc}
-                ref={videoRef}
                 videoOptions={videoOptions}
+                ref={videoRef}
             />
         </>
     )
