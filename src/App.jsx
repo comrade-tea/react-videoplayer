@@ -5,22 +5,19 @@ import OptionsEditor from "./components/OptionsEditor.jsx";
 import VideoPlayer from "./components/VideoPlayer.jsx";
 
 function App() {
-    const videoRef = useRef(null);
     const [currentSrc, setCurrentSrc] = useState("")
-
     const [videoOptions, setVideoOptions] = useState({autoplay: false, loop: false, controls: true});
     const [selectedVideoName, setSelectedVideoName] = useState(Object.keys(videos)[0]);
-
+    
     useEffect(() => {
         setCurrentSrc(videos[selectedVideoName])
-        videoRef?.current?.load();
     }, [selectedVideoName]);
 
-    const selectedVideoHandler = (name) => {
+    const handleSelectVideo = (name) => {
         setSelectedVideoName(name)
     }
 
-    const toggleHandler = (key, value) => {
+    const handleToggleCheckbox = (key, value) => {
         setVideoOptions(prev => {
             return {...prev, [key]: !value}
         })
@@ -43,12 +40,12 @@ function App() {
                     <VideoList
                         videos={videos}
                         selectedVideoName={selectedVideoName}
-                        selectedVideoHandler={selectedVideoHandler}/>
+                        selectedVideoHandler={handleSelectVideo}/>
                 </div>
 
                 <div>
                     <h4 className="text-2xl mb-5">Player options:</h4>
-                    <OptionsEditor videoOptions={videoOptions} toggleHandler={toggleHandler}/>
+                    <OptionsEditor videoOptions={videoOptions} toggleHandler={handleToggleCheckbox}/>
                 </div>
 
             </div>
@@ -56,7 +53,6 @@ function App() {
             <VideoPlayer
                 currentSrc={currentSrc}
                 videoOptions={videoOptions}
-                ref={videoRef}
             />
         </>
     )

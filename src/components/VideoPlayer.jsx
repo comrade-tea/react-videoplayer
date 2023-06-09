@@ -1,13 +1,12 @@
-import {useState, forwardRef, useEffect, useRef} from "react";
+import {useState, useEffect, useRef} from "react";
 import {clamp} from "../utils/clamp.js";
 
-const VideoPlayer = forwardRef(({currentSrc, videoRef, videoOptions}, ref) => {
+const VideoPlayer = ({currentSrc, videoOptions}) => {
+    const videoRef = useRef(null);
     const progressBarEl = useRef(null);
-
     const [playerState, setPlayerState] = useState({
         duration: 0,
         currentTime: 0,
-
         isPaused: true,
         prevStateIsPaused: null,
         clickPressed: false,
@@ -15,47 +14,46 @@ const VideoPlayer = forwardRef(({currentSrc, videoRef, videoOptions}, ref) => {
 
     const getProgressPercent = () => playerState.currentTime / playerState.duration * 100
 
-
     useEffect(() => {
-        if (ref?.current) {
+        const videoEl = videoRef?.current;
+        
+        if (videoEl) {
+            videoEl.src = currentSrc;
+            videoEl.load();
+            
             setPlayerState(prev => ({
                 ...prev,
-                duration: ref.current.duration,
-                currentTime: ref.current.currentTime
+                duration: videoEl.duration,
+                currentTime: 0
             }))
+
+            return () => {
+                videoEl.src = "";
+                videoEl.load();
+            }
         }
-    }, [ref?.current?.duration, currentSrc]);
+    }, [currentSrc]);
 
-
-    // useEffect(() => {
-    //     const videoEl = ref?.current;
-    //    
-    //     if (videoEl?.paused)
-    //         videoEl?.play()
-    //     else
-    //         videoEl?.pause()
-    //    
-    // }, [playerState.isPaused])
 
     useEffect(() => {
         if (playerState.clickPressed) {
-            document.addEventListener("mousemove", rewindEnable)
-            document.addEventListener("mouseup", rewindDisable)
+            document.addEventListener("mousemove", rewindRunning)
+            document.addEventListener("mouseup", rewindRunningDisable)
         }
         return () => {
-            document.removeEventListener("mousemove", rewindEnable)
-            document.removeEventListener("mouseup", rewindDisable)
+            document.removeEventListener("mousemove", rewindRunning)
+            document.removeEventListener("mouseup", rewindRunningDisable)
         }
     }, [playerState.clickPressed]);
 
     useEffect(() => {
         if (playerState.clickPressed) {
-            ref.current.currentTime = playerState.currentTime
+            videoRef.current.currentTime = playerState.currentTime
         }
     }, [playerState.currentTime]);
 
 
-    function rewindEnable(e) {
+    function rewindRunning(e) {
         const progressLeftOffset = progressBarEl.current.offsetLeft;
         const progressWidthPx = progressBarEl.current.offsetWidth;
 
@@ -66,20 +64,15 @@ const VideoPlayer = forwardRef(({currentSrc, videoRef, videoOptions}, ref) => {
         setPlayerState(prev => ({...prev, currentTime: timeForSet}))
     }
 
-    function rewindDisable() {
-        // todo ispaused dodelat'
-        setPlayerState(prev => ({...prev,
-            clickPressed: false, 
-            // isPaused: prev.prevStateIsPaused
-        }))
-
-        if (!playerState.prevStateIsPaused) {
-            ref.current.play();
-        }
+    function rewindRunningDisable() {
+        setPlayerState(prev => ({...prev, clickPressed: false}))
+        
+        if (!playerState.prevStateIsPaused)
+            videoRef.current.play();
     }
 
     const handlePlayToggle = () => {
-        const videoEl = ref?.current;
+        const videoEl = videoRef?.current;
 
         if (videoEl?.paused)
             videoEl?.play()
@@ -88,33 +81,33 @@ const VideoPlayer = forwardRef(({currentSrc, videoRef, videoOptions}, ref) => {
     }
 
     const handleProgress = () => {
-        const videoEl = ref?.current
+        const videoEl = videoRef?.current
         if (videoEl) {
             setPlayerState(prev => ({...prev, currentTime: videoEl.currentTime}))
         }
     }
-    
-    const handleRewind = (e) => {
+
+    const handleRewind = () => {
         setPlayerState(prev => ({
             ...prev,
             clickPressed: true,
             prevStateIsPaused: prev.isPaused,
             isPaused: true
         }))
-
-        ref?.current?.pause(); // pause anyway
+        
+        videoRef?.current?.pause()
     };
-
+    
 
     return (
         <div className="max-w-[600px]">
             <video className="block aspect-[600/338] w-full mt-[10vh] bg-black/60]"
-                   ref={ref}
+                   ref={videoRef}
+                   onLoadedData={() => setPlayerState(prev => ({...prev, duration: videoRef.current.duration}))}
                    onPlay={() => {
                        setPlayerState(prev => ({...prev, isPaused: false}))
                    }}
                    onPause={() => {
-                       console.log("----", "pause");
                        setPlayerState(prev => ({...prev, isPaused: true}))
                    }}
                    autoPlay={videoOptions.autoplay}
@@ -136,15 +129,14 @@ const VideoPlayer = forwardRef(({currentSrc, videoRef, videoOptions}, ref) => {
                     <div className="controls__progress"
                          style={{width: `${getProgressPercent()}%`}}
                     ></div>
-
-
-                    <div className={"fixed top-0 right-0 bg-amber-100 p-3"}>
-                        <div className="">current: {playerState.currentTime}</div>
-                        <div>duration: {playerState.duration}</div>
-                    </div>
                 </div>
+            </div>
+            
+            <div className={"fixed top-0 right-0 bg-amber-100 p-3"}>
+                <div className="">current: {playerState.currentTime.toFixed(2)}</div>
+                <div>duration: {playerState.duration.toFixed(2)}</div>
             </div>
         </div>
     )
-})
+}
 export default VideoPlayer
