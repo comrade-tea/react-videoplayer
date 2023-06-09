@@ -7,14 +7,15 @@ const VideoPlayer = forwardRef(({currentSrc, videoRef, videoOptions}, ref) => {
     const [playerState, setPlayerState] = useState({
         duration: 0,
         currentTime: 0,
-        
+
         isPaused: true,
+        prevStateIsPaused: null,
         clickPressed: false,
     });
 
-    const getProgressPercent = () => playerState.currentTime / playerState.duration * 100 
-        
-    
+    const getProgressPercent = () => playerState.currentTime / playerState.duration * 100
+
+
     useEffect(() => {
         if (ref?.current) {
             setPlayerState(prev => ({
@@ -26,13 +27,16 @@ const VideoPlayer = forwardRef(({currentSrc, videoRef, videoOptions}, ref) => {
     }, [ref?.current?.duration, currentSrc]);
 
 
-    useEffect(() => {
-        // native player pause
-        // setPlayerState(prev => ({...prev, isPaused: !prev.isPaused}))
-        
-        
-    }, [ref?.current?.paused, playerState.isPaused])
-    
+    // useEffect(() => {
+    //     const videoEl = ref?.current;
+    //    
+    //     if (videoEl?.paused)
+    //         videoEl?.play()
+    //     else
+    //         videoEl?.pause()
+    //    
+    // }, [playerState.isPaused])
+
     useEffect(() => {
         if (playerState.clickPressed) {
             document.addEventListener("mousemove", rewindEnable)
@@ -54,21 +58,29 @@ const VideoPlayer = forwardRef(({currentSrc, videoRef, videoOptions}, ref) => {
     function rewindEnable(e) {
         const progressLeftOffset = progressBarEl.current.offsetLeft;
         const progressWidthPx = progressBarEl.current.offsetWidth;
-        
+
         const positionPx = clamp(e.pageX - progressLeftOffset, 0, progressWidthPx);
         const positionPercent = positionPx / progressWidthPx * 100;
         const timeForSet = playerState.duration / 100 * positionPercent;
-        
+
         setPlayerState(prev => ({...prev, currentTime: timeForSet}))
     }
 
     function rewindDisable() {
         // todo ispaused dodelat'
-        setPlayerState(prev => ({...prev, clickPressed: false, isPaused: false}))
+        setPlayerState(prev => ({...prev,
+            clickPressed: false, 
+            // isPaused: prev.prevStateIsPaused
+        }))
+
+        if (!playerState.prevStateIsPaused) {
+            ref.current.play();
+        }
     }
 
     const handlePlayToggle = () => {
         const videoEl = ref?.current;
+
         if (videoEl?.paused)
             videoEl?.play()
         else
@@ -78,17 +90,19 @@ const VideoPlayer = forwardRef(({currentSrc, videoRef, videoOptions}, ref) => {
     const handleProgress = () => {
         const videoEl = ref?.current
         if (videoEl) {
-            // const percent = (videoEl.currentTime / videoEl.duration) * 100;
             setPlayerState(prev => ({...prev, currentTime: videoEl.currentTime}))
         }
     }
-
+    
     const handleRewind = (e) => {
         setPlayerState(prev => ({
             ...prev,
             clickPressed: true,
+            prevStateIsPaused: prev.isPaused,
             isPaused: true
         }))
+
+        ref?.current?.pause(); // pause anyway
     };
 
 
@@ -96,6 +110,13 @@ const VideoPlayer = forwardRef(({currentSrc, videoRef, videoOptions}, ref) => {
         <div className="max-w-[600px]">
             <video className="block aspect-[600/338] w-full mt-[10vh] bg-black/60]"
                    ref={ref}
+                   onPlay={() => {
+                       setPlayerState(prev => ({...prev, isPaused: false}))
+                   }}
+                   onPause={() => {
+                       console.log("----", "pause");
+                       setPlayerState(prev => ({...prev, isPaused: true}))
+                   }}
                    autoPlay={videoOptions.autoplay}
                    controls={videoOptions.controls}
                    onTimeUpdate={handleProgress}
@@ -104,7 +125,7 @@ const VideoPlayer = forwardRef(({currentSrc, videoRef, videoOptions}, ref) => {
             </video>
 
             <div className="controls">
-                <button className={`play controls__play ${playerState.isPaused ? "paused" : ""}`}
+                <button className={`play controls__play ${playerState.isPaused ? "" : "paused"}`}
                         onClick={handlePlayToggle}
                         type="button"></button>
 
