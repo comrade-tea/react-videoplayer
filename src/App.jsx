@@ -30,6 +30,7 @@ function App() {
 
     return (
         <>
+            <em>{import.meta.env.BASE_URL}</em>
             <div className="mb-[4vh]">
                 <h1 className="text-3xl mb-10">Videoplayer + custom controls</h1>
                 <p><b>Features</b>:</p>
