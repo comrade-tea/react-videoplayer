@@ -1,14 +1,18 @@
 import {videos} from "./api/data.js";
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useState} from 'react'
 import VideoList from "./components/VideoList.jsx";
 import OptionsEditor from "./components/OptionsEditor.jsx";
 import VideoPlayer from "./components/VideoPlayer.jsx";
 
 function App() {
     const [currentSrc, setCurrentSrc] = useState("")
-    const [videoOptions, setVideoOptions] = useState({autoplay: false, loop: false, controls: true});
     const [selectedVideoName, setSelectedVideoName] = useState(Object.keys(videos)[0]);
-    
+    const [videoOptions, setVideoOptions] = useState({
+        autoplay: false,
+        loop: false,
+        controls: true
+    });
+
     useEffect(() => {
         setCurrentSrc(videos[selectedVideoName])
     }, [selectedVideoName]);
@@ -23,16 +27,16 @@ function App() {
         })
     };
 
-    
+
     return (
         <>
             <div className="mb-[4vh]">
-                <h1 className="text-3xl mb-10">Videoplayer +  custom controls</h1>
+                <h1 className="text-3xl mb-10">Videoplayer + custom controls</h1>
                 <p><b>Features</b>:</p>
                 <ul className="list-inside list-disc mt-2">
                     <li>Selecting a video by changing the src of the video</li>
                     <li>Configuring video options</li>
-                    <li>Custom video controls that behave like native ones</li>
+                    <li>Custom video controls that behave like native ones (click/drag)</li>
                 </ul>
             </div>
 
@@ -51,7 +55,7 @@ function App() {
                 </div>
 
             </div>
-            
+
             <VideoPlayer
                 currentSrc={currentSrc}
                 videoOptions={videoOptions}

@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef, useCallback, useMemo} from "react";
+import {useState, useEffect, useRef} from "react";
 import {clamp} from "../utils/clamp.js";
 
 const VideoPlayer = ({currentSrc, videoOptions}) => {
@@ -12,18 +12,12 @@ const VideoPlayer = ({currentSrc, videoOptions}) => {
         clickPressed: false,
     });
 
-    
-
-    // const getProgressPercent = () => playerState.currentTime / playerState.duration * 100
-    const getProgressPercent = useCallback(() => {
-        console.log("----", "rebuild get progress..")
-        return playerState.currentTime / playerState.duration * 100
-    }, [playerState]);
+    const getProgressPercent = () => playerState.currentTime / playerState.duration * 100;
 
     useEffect(() => {
         const videoEl = videoRef?.current;
         
-        if (videoEl) {
+        if (videoEl && videoEl.src !== currentSrc) {
             videoEl.src = currentSrc;
             videoEl.load();
             
@@ -32,11 +26,6 @@ const VideoPlayer = ({currentSrc, videoOptions}) => {
                 duration: videoEl.duration,
                 currentTime: 0
             }))
-
-            return () => {
-                videoEl.src = "";
-                videoEl.load();
-            }
         }
     }, [currentSrc]);
 
