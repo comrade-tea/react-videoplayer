@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef} from "react";
+import {useState, useEffect, useRef, useCallback, useMemo} from "react";
 import {clamp} from "../utils/clamp.js";
 
 const VideoPlayer = ({currentSrc, videoOptions}) => {
@@ -12,7 +12,13 @@ const VideoPlayer = ({currentSrc, videoOptions}) => {
         clickPressed: false,
     });
 
-    const getProgressPercent = () => playerState.currentTime / playerState.duration * 100
+    
+
+    // const getProgressPercent = () => playerState.currentTime / playerState.duration * 100
+    const getProgressPercent = useCallback(() => {
+        console.log("----", "rebuild get progress..")
+        return playerState.currentTime / playerState.duration * 100
+    }, [playerState]);
 
     useEffect(() => {
         const videoEl = videoRef?.current;
@@ -34,7 +40,12 @@ const VideoPlayer = ({currentSrc, videoOptions}) => {
         }
     }, [currentSrc]);
 
-
+    useEffect(() => {
+        if (playerState.clickPressed) {
+            videoRef.current.currentTime = playerState.currentTime
+        }
+    }, [playerState.currentTime]);
+    
     useEffect(() => {
         if (playerState.clickPressed) {
             document.addEventListener("mousemove", rewindRunning)
@@ -45,13 +56,6 @@ const VideoPlayer = ({currentSrc, videoOptions}) => {
             document.removeEventListener("mouseup", rewindRunningDisable)
         }
     }, [playerState.clickPressed]);
-
-    useEffect(() => {
-        if (playerState.clickPressed) {
-            videoRef.current.currentTime = playerState.currentTime
-        }
-    }, [playerState.currentTime]);
-
 
     function rewindRunning(e) {
         const progressLeftOffset = progressBarEl.current.offsetLeft;
@@ -80,22 +84,22 @@ const VideoPlayer = ({currentSrc, videoOptions}) => {
             videoEl?.pause()
     }
 
-    const handleProgress = () => {
+    const handleVideoTimeUpdate = () => {
         const videoEl = videoRef?.current
         if (videoEl) {
             setPlayerState(prev => ({...prev, currentTime: videoEl.currentTime}))
         }
     }
 
-    const handleRewind = () => {
+    const handleRewind = (e) => {
         setPlayerState(prev => ({
             ...prev,
-            clickPressed: true,
             prevStateIsPaused: prev.isPaused,
-            isPaused: true
+            clickPressed: true,
         }))
-        
+
         videoRef?.current?.pause()
+        rewindRunning(e); // handle click
     };
     
 
@@ -112,7 +116,7 @@ const VideoPlayer = ({currentSrc, videoOptions}) => {
                    }}
                    autoPlay={videoOptions.autoplay}
                    controls={videoOptions.controls}
-                   onTimeUpdate={handleProgress}
+                   onTimeUpdate={handleVideoTimeUpdate}
                    loop={videoOptions.loop} playsInline muted>
                 <source src={currentSrc} type={"video/mp4"}/>
             </video>
