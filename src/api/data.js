@@ -1,4 +1,4 @@
-const path = "./"
+const path = import.meta.env.basePath;
 
 const videos = {
     deer: path + "react_video-fast.mp4",
