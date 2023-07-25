@@ -6,7 +6,7 @@ import VideoPlayer from "./components/VideoPlayer.jsx";
 
 function Form() {
     return (
-        <form netlify id="form" className={"fixed top-20 right-10 bg-amber-100 p-4 border-2 border-amber-400"}>
+        <form netlify="true" id="form" className={"fixed top-20 right-10 bg-amber-100 p-4 border-2 border-amber-400"}>
             <ul className={"flex flex-col gap-4"}>
                 <li><input className="border-2" type="text" name={"name"} placeholder={"name"}/></li>
                 <li><input className="border-2" type="email" name={"email"} placeholder={"email"}/></li>
