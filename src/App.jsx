@@ -3,22 +3,8 @@ import {useEffect, useState} from 'react'
 import VideoList from "./components/VideoList.jsx";
 import OptionsEditor from "./components/OptionsEditor.jsx";
 import VideoPlayer from "./components/VideoPlayer.jsx";
+import Form from "./components/Form.jsx";
 
-function Form() {
-    return (
-        <form data-netlify="true"
-              id="form"
-              className={"fixed top-20 right-10 bg-amber-100 p-4 border-2 border-amber-400"}>
-            
-            <ul className={"flex flex-col gap-4"}>
-                <li><input className="border-2" type="text" name={"name"} placeholder={"name"}/></li>
-                <li><input className="border-2" type="email" name={"email"} placeholder={"email"}/></li>
-            </ul>
-
-            <button className={"bg-green-400 py-2 px-6 mt-8"} type={"submit"}>send</button>
-        </form>
-    );
-}
 
 function App() {
     const [currentSrc, setCurrentSrc] = useState("")
