@@ -3,7 +3,7 @@ import {useEffect, useState} from 'react'
 import VideoList from "./components/VideoList.jsx";
 import OptionsEditor from "./components/OptionsEditor.jsx";
 import VideoPlayer from "./components/VideoPlayer.jsx";
-import Form from "./components/Form.jsx";
+// import Form from "./components/Form.jsx";
 
 
 function App() {
@@ -34,7 +34,10 @@ function App() {
         <>
             <div className="mb-[4vh]">
                 <h1 className="text-3xl mb-10">Videoplayer + custom controls</h1>
-                <p><b>Features</b>:</p>
+                
+                <p className="text-xl">
+                    <b>Features</b>:
+                </p>
                 <ul className="list-inside list-disc mt-2">
                     <li>Selecting a video by changing the src of the video</li>
                     <li>Configuring video options</li>
