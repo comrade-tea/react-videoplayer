@@ -10,7 +10,7 @@ export const Footer = () => {
                         <FaGithub className="me-2"/> source code
                     </a>
 
-                    <div className="ms-auto">create by <a className="link"
+                    <div className="ms-auto">created by <a className="link"
                                                           href="https://comrade-tea-projects.netlify.app"
                                                           target="_blank" rel="noreferrer">
                         comrade-tea
