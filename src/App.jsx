@@ -3,7 +3,6 @@ import {useEffect, useState} from 'react'
 import VideoList from "./components/VideoList.jsx";
 import OptionsEditor from "./components/OptionsEditor.jsx";
 import VideoPlayer from "./components/VideoPlayer.jsx";
-// import Form from "./components/Form.jsx";
 
 
 function App() {
@@ -65,8 +64,6 @@ function App() {
                 currentSrc={currentSrc}
                 videoOptions={videoOptions}
             />
-
-            <Form/>
         </>
     )
 }
